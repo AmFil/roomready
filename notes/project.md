@@ -18,9 +18,11 @@ Coordination and billing contact is Kameron Moshier.
 
 Verification owner is Carter Pugh.
 
-Application, Platform, Security and Delivery owners are waiting for the team to choose. The cloud setup operator will be recorded once that role is chosen.
+Security owner is Paul Christiansen. He handles service accounts, project permissions and secrets in the team project. Platform still enables the application APIs. Additional permissions for a specific resource can be arranged when that resource exists.
 
-Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Cloud permissions will be granted to each confirmed Google account for its assigned work. Keep personal account details in the private team workspace.
+Application, Platform and Delivery owners are waiting for Brady Schow, Brayden Grant and John Spears Jr to choose.
+
+Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Paul has Security setup permissions. Brady and Brayden have project discovery and access policy viewing permissions while their roles are undecided. Additional cloud access depends on the role each person chooses. Keep personal account details in the private team workspace.
 
 ## Cloud setup handoff
 
