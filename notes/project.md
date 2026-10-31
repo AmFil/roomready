@@ -22,9 +22,11 @@ Security owner is Paul Christiansen. He handles service accounts, project permis
 
 Delivery owner is John Spears Jr. His Week 2 work is to package and test the app in a container. Initial cloud access allows him to find the project and view its access policy. Publishing permissions will be arranged with Security when the registry and publishing account are ready.
 
-Application and Platform owners are waiting for Brady Schow and Brayden Grant to choose.
+Application owner is Brady Schow.
 
-Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Paul has Security setup permissions. Brady and Brayden have project discovery and access policy viewing permissions while their roles are undecided. Additional cloud access depends on the role each person chooses. Keep personal account details in the private team workspace.
+Platform owner is Brayden Grant. His Week 2 setup permissions allow enabling cloud services and creating or configuring the container registry and database. They do not include application data access, billing administration or deployment.
+
+Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Paul has Security setup permissions. Brady has initial project discovery and access policy viewing permissions for his local Week 2 application work. Additional permissions are arranged for each role as its cloud work begins. Keep personal account details in the private team workspace.
 
 ## Cloud setup handoff
 
