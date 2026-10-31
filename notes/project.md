@@ -20,7 +20,9 @@ Verification owner is Carter Pugh.
 
 Security owner is Paul Christiansen. He handles service accounts, project permissions and secrets in the team project. Platform still enables the application APIs. Additional permissions for a specific resource can be arranged when that resource exists.
 
-Application, Platform and Delivery owners are waiting for Brady Schow, Brayden Grant and John Spears Jr to choose.
+Delivery owner is John Spears Jr. His Week 2 work is to package and test the app in a container. Initial cloud access allows him to find the project and view its access policy. Publishing permissions will be arranged with Security when the registry and publishing account are ready.
+
+Application and Platform owners are waiting for Brady Schow and Brayden Grant to choose.
 
 Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Paul has Security setup permissions. Brady and Brayden have project discovery and access policy viewing permissions while their roles are undecided. Additional cloud access depends on the role each person chooses. Keep personal account details in the private team workspace.
 
