@@ -1,6 +1,7 @@
 # Local environment settings and credentials
 .env
 .env.*
+*.env
 !.env.example
 !.env.sample
 *.key
@@ -13,6 +14,7 @@
 *service_account*.json
 client_secret*.json
 application_default_credentials.json
+gha-creds-*.json
 credentials/
 secrets/
 private/
@@ -40,6 +42,7 @@ dist/
 
 # Local logs, cloud state and editor files
 logs/
+evidence/
 *.log
 *.tfstate
 *.tfstate.*
