@@ -16,7 +16,9 @@ This is the team environment. Use it for the team build. The separate rehearsal 
 
 Coordination and billing contact is Kameron Moshier.
 
-Application, Platform, Security, Delivery and Verification owners are waiting for the team to choose. The cloud setup operator will be recorded once that role is chosen.
+Verification owner is Carter Pugh.
+
+Application, Platform, Security and Delivery owners are waiting for the team to choose. The cloud setup operator will be recorded once that role is chosen.
 
 Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Cloud permissions will be granted to each confirmed Google account for its assigned work. Keep personal account details in the private team workspace.
 
