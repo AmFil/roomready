@@ -40,6 +40,20 @@ Secret Manager API (secretmanager.googleapis.com)
 
 Cloud Build API (cloudbuild.googleapis.com)
 
+Status: Verified
+
+## Artifact Registry
+
+Repository Name: roomready
+
+Format: Docker
+
+Location: us-central1
+
+Image Repository Address: us-central1-docker.pkg.dev/roomready-team-261030/roomready
+
+Status: Verified
+
 ## Cloud setup handoff
 
 Coordination has created the cloud project, linked billing and set the total project budget alerts. No application or storage resources have been deployed yet.
