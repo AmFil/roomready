@@ -28,6 +28,18 @@ Platform owner is Brayden Grant. His Week 2 setup permissions allow enabling clo
 
 Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Paul has Security setup permissions. Brady has initial project discovery and access policy viewing permissions for his local Week 2 application work. Additional permissions are arranged for each role as its cloud work begins. Keep personal account details in the private team workspace.
 
+## Enabled APIs
+
+Cloud Run API (run.googleapis.com)
+
+Artifact Registry API (artifactregistry.googleapis.com)
+
+Firestore API (firestore.googleapis.com)
+
+Secret Manager API (secretmanager.googleapis.com)
+
+Cloud Build API (cloudbuild.googleapis.com)
+
 ## Cloud setup handoff
 
 Coordination has created the cloud project, linked billing and set the total project budget alerts. No application or storage resources have been deployed yet.
