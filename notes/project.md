@@ -14,19 +14,17 @@ This is the team environment. Use it for the team build. The separate rehearsal 
 
 ## People and access
 
-Coordination and billing contact is Kameron Moshier.
+Kameron Moshier owns Coordination and Delivery. As project owner he manages billing and team access and can upload the first container image to the team registry.
 
-Verification owner is Carter Pugh.
+Paul Christiansen owns Security. His setup permissions let him manage service accounts, access policies and the form protection secret.
 
-Security owner is Paul Christiansen. He handles service accounts, project permissions and secrets in the team project. Platform still enables the application APIs. Additional permissions for a specific resource can be arranged when that resource exists.
+Brayden Grant owns Platform. His setup permissions let him enable cloud services and configure the container registry and Firestore database.
 
-Delivery owner is John Spears Jr. His Week 2 work is to package and test the app in a container. Initial cloud access allows him to find the project and view its access policy. Publishing permissions will be arranged with Security when the registry and publishing account are ready.
+Brady Schow owns Application. He can find the project and view its access policy while building the app.
 
-Application owner is Brady Schow.
+Carter Pugh owns Verification. He can find the project and view its access policy while checking the app and container.
 
-Platform owner is Brayden Grant. His Week 2 setup permissions allow enabling cloud services and creating or configuring the container registry and database. They do not include application data access, billing administration or deployment.
-
-Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Paul has Security setup permissions. Brady has initial project discovery and access policy viewing permissions for his local Week 2 application work. Additional permissions are arranged for each role as its cloud work begins. Keep personal account details in the private team workspace.
+Everyone can read this public repository. GitHub collaborators can push changes after accepting an invitation. Keep personal account details in the private team workspace.
 
 ## Enabled APIs
 
@@ -65,16 +63,19 @@ Security:
 - Denied Test Service Account: roomready-denied-test@roomready-team-261030.iam.gserviceaccount.com
 - Form Protection Secret Name: roomready-form-secret (Version: 1, Resource Path: projects/386355367659/secrets/roomready-form-secret/versions/1)
 
+The app account can read and write RoomReady requests in Firestore and read the form protection secret. Use version `1` when connecting the app to the secret.
+
+The publishing account can upload images to the `roomready` registry repository and act as the app account for updates. In Week 3, once the Cloud Run service exists, grant the publishing account Cloud Run Developer on that service.
+
+The denied test account has no project role or access to the app or database. It is used to check that an unapproved account cannot open RoomReady.
 
 Delivery: Artifact Registry Docker repository address is us-central1-docker.pkg.dev/roomready-team-261030/roomready.
 
 ## Cloud setup handoff
 
-Coordination has created the cloud project, linked billing and set the total project budget alerts. No application or storage resources have been deployed yet.
+Coordination linked billing and set the project budget alerts. The project APIs are enabled, the registry and Firestore database are ready, and Security created the three service accounts and the form protection secret listed above.
 
-Platform enables the application services and creates Artifact Registry and Firestore. Security sets up service accounts, permissions and the application secret. Record the resource names here as they are created.
-
-The Cloud Run service, Artifact Registry repository, Firestore database, service accounts, secret name and application address are pending.
+In Week 3, Delivery will publish the image and Platform will create the Cloud Run service and share its address.
 
 ## Spending
 
