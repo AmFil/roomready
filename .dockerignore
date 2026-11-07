@@ -1,0 +1,6 @@
+# Only the files needed to run RoomReady belong in the build context.
+**
+!app/
+app/**
+!app/requirements.txt
+!app/app.py
