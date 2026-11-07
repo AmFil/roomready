@@ -58,7 +58,13 @@ Status: Verified
 
 Application: Firestore database is (default) in project roomready-team-261030, region us-central1.
 
-Security: Project ID is roomready-team-261030, project number 386355367659, region us-central1. Firestore database is (default) and Artifact Registry repository is roomready.
+Security:
+- Project ID: roomready-team-261030 (Project Number: 386355367659, Region: us-central1)
+- App Service Account: roomready-app@roomready-team-261030.iam.gserviceaccount.com
+- Publishing Service Account: roomready-publisher@roomready-team-261030.iam.gserviceaccount.com
+- Denied Test Service Account: roomready-denied-test@roomready-team-261030.iam.gserviceaccount.com
+- Form Protection Secret Name: roomready-form-secret (Version: 1, Resource Path: projects/386355367659/secrets/roomready-form-secret/versions/1)
+
 
 Delivery: Artifact Registry Docker repository address is us-central1-docker.pkg.dev/roomready-team-261030/roomready.
 
