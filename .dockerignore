@@ -4,3 +4,8 @@
 app/**
 !app/requirements.txt
 !app/app.py
+!app/identity.py
+!app/storage.py
+!app/templates/
+app/templates/**
+!app/templates/index.html

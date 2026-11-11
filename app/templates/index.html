@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RoomReady</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 850px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            color: #222;
+        }
+        label {
+            display: block;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+        input, textarea, select, button {
+            box-sizing: border-box;
+            font: inherit;
+            margin-top: .35rem;
+            padding: .6rem;
+        }
+        input, textarea {
+            width: 100%;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        article {
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin: 1rem 0;
+            padding: 1rem;
+        }
+        .notice {
+            background: #f1f5f9;
+            padding: .75rem;
+        }
+        .error {
+            color: #a00;
+        }
+        .release {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>RoomReady</h1>
+        <p class="release">Release: {{ release_label }}</p>
+    </header>
+
+    <p class="notice">
+        {% if temporary_storage %}Temporary version: requests clear when the app restarts.{% else %}Requests are saved and shared with the team.{% endif %}
+    </p>
+
+    {% if error %}
+        <p class="error" role="alert">{{ error }}</p>
+    {% endif %}
+
+    <h2>Report an equipment problem</h2>
+    <form method="post" action="{{ url_for('create_request') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="room">Room number</label>
+        <input id="room" name="room" type="text"
+               placeholder="Demo 204" maxlength="40" required>
+
+        <label for="title">Request title</label>
+        <input id="title" name="title" type="text"
+               placeholder="Projector will not turn on"
+               maxlength="100" required>
+
+        <label for="description">Request description</label>
+        <textarea id="description" name="description"
+                  placeholder="Describe the equipment problem"
+                  maxlength="1000" required></textarea>
+
+        <button type="submit">Submit request</button>
+    </form>
+
+    <h2>Requests</h2>
+
+    {% for item in room_requests %}
+        <article data-request-id="{{ item.id }}" data-status="{{ item.status }}">
+            <h3>{{ item.title }}</h3>
+            <p class="release">Request ID: {{ item.id }}</p>
+            <p><strong>Room:</strong> {{ item.room }}</p>
+            <p>{{ item.description }}</p>
+
+            <form method="post"
+                  action="{{ url_for('update_status', request_id=item.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label for="status-{{ item.id }}">Status</label>
+                <select id="status-{{ item.id }}" name="status">
+                    {% for status in statuses %}
+                        <option value="{{ status }}"
+                            {% if item.status == status %}selected{% endif %}>
+                            {{ status }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Save status</button>
+            </form>
+        </article>
+    {% else %}
+        <p>No requests yet.</p>
+    {% endfor %}
+</body>
+</html>
