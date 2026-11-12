@@ -64,10 +64,9 @@ jobs:
           gcloud auth configure-docker "${GCP_REGION}-docker.pkg.dev" --quiet
           docker tag roomready:test "$image_tag"
           docker push "$image_tag"
-          image=$(docker image inspect "$image_tag" --format '{{index .RepoDigests 0}}')
-          digest=${image##*@}
-          [[ $digest =~ ^sha256:[a-f0-9]{64}$ && $image == "${IMAGE_BASE}@${digest}" ]]
-          echo "image=$image" >> "$GITHUB_OUTPUT"
+          digest=$(gcloud artifacts docker images describe "$image_tag" --project="$GCP_PROJECT_ID" --format='value(image_summary.digest)')
+          [[ $digest =~ ^sha256:[a-f0-9]{64}$ ]]
+          echo "image=${IMAGE_BASE}@${digest}" >> "$GITHUB_OUTPUT"
 
       - name: Deploy a private candidate and verify its traffic
         env:
