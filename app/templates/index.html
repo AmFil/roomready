@@ -54,14 +54,14 @@
     </header>
 
     <p class="notice">
-        {% if temporary_storage %}Temporary version: requests clear when the app restarts.{% else %}Requests are saved and shared with the team.{% endif %}
+        {% if temporary_storage %}Temporary version: requests clear when the app restarts.{% else %}Report an equipment problem and track it from Open to Resolved.{% endif %}
     </p>
 
     {% if error %}
         <p class="error" role="alert">{{ error }}</p>
     {% endif %}
 
-    <h2>Report an equipment problem and track it from Open to Resolved.</h2>
+    <h2>Report an equipment problem</h2>
     <form method="post" action="{{ url_for('create_request') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label for="room">Room number</label>
