@@ -13,7 +13,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app import create_app
 from identity import IAP_ISSUER, IAPVerifier
-from storage import MemoryStore
+from storage import MemoryStore, StorageError
 
 
 def csrf(page):
@@ -61,7 +61,91 @@ class RequestWorkflow(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertIn(b"No requests yet", self.staff.get("/").data)
 
+    def test_title_at_100_characters_is_accepted(self):
+        title = "T" * 100
+        page = self.staff.get("/")
+        response = self.staff.post("/requests", data={
+            "csrf_token": csrf(page),
+            "room": "Demo 302",
+            "title": title,
+            "description": "Title boundary test.",
+        })
+        self.assertEqual(response.status_code, 303)
+        self.assertIn(title.encode(), self.staff.get("/").data)
 
+    def test_title_over_100_characters_is_rejected_without_adding_request(self):
+        page = self.staff.get("/")
+        response = self.staff.post("/requests", data={
+            "csrf_token": csrf(page),
+            "room": "Demo 302",
+            "title": "Existing request",
+            "description": "This request should remain saved.",
+        })
+        self.assertEqual(response.status_code, 303)
+
+        page = self.staff.get("/")
+        existing_id = re.search(
+            r'data-request-id="([a-f0-9]{32})" data-status="Open"',
+            page.get_data(as_text=True),
+        )[1]
+
+        response = self.staff.post("/requests", data={
+            "csrf_token": csrf(page),
+            "room": "Demo 303",
+            "title": "T" * 101,
+            "description": "This title is too long.",
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(
+            b"Please keep the title to 100 characters or fewer.",
+            response.data,
+        )
+
+        page = self.staff.get("/")
+        request_ids = re.findall(
+            r'data-request-id="([a-f0-9]{32})"',
+            page.get_data(as_text=True),
+        )
+        self.assertEqual(request_ids, [existing_id])
+    def test_storage_failure_shows_retry_message_and_preserves_request(self):
+        store = MemoryStore()
+        with patch("app.MemoryStore", return_value=store):
+            test_app = create_app()
+        client = test_app.test_client()
+
+        request_id = store.create_request(
+            "Demo 302", "No audio", "Saved before the outage."
+        )
+        store.update_status(request_id, "Working")
+
+        page = client.get("/")
+        with patch.object(
+            store, "create_request", side_effect=StorageError("create")
+        ):
+            response = client.post("/requests", data={
+                "csrf_token": csrf(page),
+                "room": "Demo 303",
+                "title": "Another request",
+                "description": "This save should fail temporarily.",
+            })
+
+        self.assertEqual(response.status_code, 503)
+        self.assertIn(
+            b"Requests could not be loaded or saved. Please try again shortly.",
+            response.data,
+        )
+        self.assertNotIn(b"StorageError", response.data)
+
+        page = client.get("/")
+        request_ids = re.findall(
+            r'data-request-id="([a-f0-9]{32})"',
+            page.get_data(as_text=True),
+        )
+        self.assertEqual(request_ids, [request_id])
+        self.assertIn(
+            f'data-request-id="{request_id}" data-status="Working"'.encode(),
+            page.data,
+        )
 class ProtectedApplication(unittest.TestCase):
     def setUp(self):
         self.audience = "/projects/123456789/locations/us-central1/services/roomready"

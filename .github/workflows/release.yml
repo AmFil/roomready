@@ -1,9 +1,17 @@
 name: RoomReady release
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      exercise_failed_check:
+        description: Run one deliberate failing test to verify the release stops
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -13,7 +21,37 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  checks:
+    name: App checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build the RoomReady test container
+        run: docker build --file deployment/Dockerfile --tag roomready:check .
+
+      - name: Add the deliberate failing test for this run
+        if: github.event_name == 'workflow_dispatch' && inputs.exercise_failed_check
+        shell: bash
+        run: |
+          cat > app/tests/test_release_gate.py <<'PY'
+          import unittest
+
+          class ReleaseGateExercise(unittest.TestCase):
+              def test_deliberate_failure(self):
+                  self.fail("Expected Week 4 release gate failure")
+          PY
+
+      - name: Run the required app tests
+        run: docker run --rm --volume "$PWD/app/tests:/checks:ro" roomready:check python -m unittest discover -v -s /checks
+
   release:
+    needs: checks
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
