@@ -7,6 +7,20 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      operation:
+        description: Candidate builds privately. Split is 50/50, promote is 100% candidate, rollback is 100% stable.
+        type: choice
+        required: true
+        default: candidate
+        options: [candidate, split, promote, rollback]
+      stable_revision:
+        description: Exact stable revision from the handoff. Leave empty for candidate.
+        type: string
+        required: false
+      candidate_revision:
+        description: Exact verified candidate for split or promote. Ignored for rollback. Leave empty for candidate builds.
+        type: string
+        required: false
       exercise_failed_check:
         description: Run one deliberate failing test to verify the release stops
         type: boolean
@@ -21,7 +35,34 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    name: Check release inputs and controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      operation: ${{ steps.inputs.outputs.operation }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Test traffic controls without cloud access
+        run: python3 -m unittest discover -v -s deployment/tests
+
+      - name: Validate the requested operation
+        id: inputs
+        env:
+          OPERATION: ${{ inputs.operation }}
+          STABLE_REVISION: ${{ inputs.stable_revision }}
+          CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
+          EXERCISE_FAILED_CHECK: ${{ inputs.exercise_failed_check }}
+        run: python3 deployment/traffic.py --validate-only
+
   checks:
+    needs: validate
+    if: needs.validate.outputs.operation == 'candidate'
     name: App checks
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -51,8 +92,8 @@ jobs:
         run: docker run --rm --volume "$PWD/app/tests:/checks:ro" roomready:check python -m unittest discover -v -s /checks
 
   release:
-    needs: checks
-    if: github.ref == 'refs/heads/main'
+    needs: [validate, checks]
+    if: github.ref == 'refs/heads/main' && needs.validate.outputs.operation == 'candidate'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -132,3 +173,35 @@ jobs:
             printf 'Deployed `%s` at zero normal traffic.\n\n' "$revision"
             printf 'Source `%s`\n\nImage `%s`\n' "$GITHUB_SHA" "$IMAGE"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  traffic:
+    name: Change existing revision traffic
+    needs: validate
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && needs.validate.outputs.operation != 'candidate'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OPERATION: ${{ needs.validate.outputs.operation }}
+      STABLE_REVISION: ${{ inputs.stable_revision }}
+      CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      GCP_REGION: ${{ vars.GCP_REGION }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Sign in to Google Cloud with the release identity
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.RELEASE_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Validate existing revisions and change traffic
+        run: python3 deployment/traffic.py
